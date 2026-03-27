@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Money Mentor</title>
+</head>
+<body>
+
+<h2>AI Money Mentor 💰</h2>
+
+<label>Salary:</label>
+<input type="number" id="salary"><br><br>
+
+<label>Expenses:</label>
+<input type="number" id="expenses"><br><br>
+
+<button onclick="analyze()">Analyze</button>
+
+<h3 id="result"></h3>
+
+<hr>
+
+<h3>Ask AI</h3>
+<input type="text" id="chatInput">
+<button onclick="sendChat()">Send</button>
+
+<p id="chatReply"></p>
+
+<script>
+function analyze() {
+    fetch('/analyze', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+            salary: document.getElementById('salary').value,
+            expenses: document.getElementById('expenses').value
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById('result').innerText =
+            "Score: " + data.score +
+            " | Savings: ₹" + data.savings +
+            " | " + data.suggestion;
+    });
+}
+
+function sendChat() {
+    const message = document.getElementById('chatInput').value;
+
+    fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ message: message })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.reply) {
+            document.getElementById('chatReply').innerText = data.reply;
+        } else {
+            document.getElementById('chatReply').innerText = "No response from AI";
+        }
+    })
+    .catch(error => {
+        document.getElementById('chatReply').innerText = "Error connecting to AI";
+    });
+}
+</script>
+
+</body>
+</html>
